@@ -1,0 +1,28 @@
+version: '3.9'
+services:
+  db:
+    image: postgres:16
+    container_name: ${APP_NAME}-db
+    environment:
+      POSTGRES_PASSWORD: 12345
+      POSTGRES_DB: legalbot
+      PGTZ: 'Europe/Kyiv'
+      TZ: 'Europe/Kyiv'
+    ports:
+      - "5432:5432"
+    volumes:
+      - legalbot_data:/var/lib/postgresql/data
+
+  bot:
+    image: node:20-alpine
+    container_name: ${APP_NAME}-app
+    env_file: .env
+    depends_on:
+      - db
+    command: node src/app/bot.js
+    volumes:
+      - .:/app
+    working_dir: /app
+
+volumes:
+  legalbot_data:
